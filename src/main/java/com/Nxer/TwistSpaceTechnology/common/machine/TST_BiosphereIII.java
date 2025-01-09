@@ -166,7 +166,7 @@ public class TST_BiosphereIII extends GTCM_MultiMachineBase<TST_BiosphereIII> {
                 }
 
                 // Sievert check
-                if (sievert.sievert == 0) {
+                if (!sievert.isExact) {
                     if (TST_BiosphereIII.this.mSievert < TST_BiosphereIII.this.mNeededSievert) {
                         return ResultWrongSievert.insufficientSievert(TST_BiosphereIII.this.mNeededSievert);
                     }
