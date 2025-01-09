@@ -44,7 +44,6 @@ import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import bartworks.API.BorosilicateGlass;
 import bartworks.API.recipe.BartWorksRecipeMaps;
 import bartworks.common.configs.Configuration;
-import bartworks.common.tileentities.multis.MTEBioVat;
 import bartworks.common.tileentities.tiered.GT_MetaTileEntity_RadioHatch;
 import bartworks.util.BWUtil;
 import bartworks.util.MathUtils;
@@ -62,10 +61,12 @@ import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.util.GTRecipe;
+import gregtech.api.util.GTRecipeConstants;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.HatchElementBuilder;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.api.util.ParallelHelper;
+import gregtech.api.util.recipe.Sievert;
 
 public class TST_BiosphereIII extends GTCM_MultiMachineBase<TST_BiosphereIII> {
 
@@ -149,9 +150,15 @@ public class TST_BiosphereIII extends GTCM_MultiMachineBase<TST_BiosphereIII> {
                     .areStacksEqualOrNull((ItemStack) recipe.mSpecialItems, TST_BiosphereIII.this.getControllerSlot()))
                     return CheckRecipeResultRegistry.NO_RECIPE;
 
-                int[] conditions = MTEBioVat.specialValueUnpack(recipe.mSpecialValue);
-                TST_BiosphereIII.this.mNeededGlassTier = conditions[0];
-                TST_BiosphereIII.this.mNeededSievert = conditions[3];
+                Sievert sievert = recipe.getMetadata(GTRecipeConstants.SIEVERT);
+                int glassTier = recipe.getMetadataOrDefault(GTRecipeConstants.GLASS, 0);
+
+                if (sievert == null) {
+                    return CheckRecipeResultRegistry.NO_RECIPE;
+                }
+
+                TST_BiosphereIII.this.mNeededGlassTier = glassTier;
+                TST_BiosphereIII.this.mNeededSievert = sievert.sievert;
 
                 // Glass tier check
                 if (TST_BiosphereIII.this.mGlassTier < TST_BiosphereIII.this.mNeededGlassTier) {
@@ -159,7 +166,7 @@ public class TST_BiosphereIII extends GTCM_MultiMachineBase<TST_BiosphereIII> {
                 }
 
                 // Sievert check
-                if (conditions[2] == 0) {
+                if (sievert.sievert == 0) {
                     if (TST_BiosphereIII.this.mSievert < TST_BiosphereIII.this.mNeededSievert) {
                         return ResultWrongSievert.insufficientSievert(TST_BiosphereIII.this.mNeededSievert);
                     }

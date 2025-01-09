@@ -28,6 +28,7 @@ import gregtech.api.interfaces.modularui.IAddUIWidgets;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.implementations.MTEHatchInputBus;
+import gregtech.api.objects.GTDualInputs;
 import gregtech.api.render.TextureFactory;
 import gregtech.common.tileentities.machines.IDualInputHatch;
 import gregtech.common.tileentities.machines.IDualInputInventory;
@@ -43,18 +44,18 @@ public class GT_MetaTileEntity_Hatch_DualInput extends MTEHatchInputBus implemen
 
     public static class Inventory implements IDualInputInventory {
 
-        private final ItemStack[] itemInventory;
-        private final FluidStack[] fluidInventory;
+        private final GTDualInputs inventory;
 
         public Inventory(ItemStack[] items, FluidStack[] fluid) {
-            itemInventory = items;
-            fluidInventory = fluid;
+            inventory = new GTDualInputs();
+            inventory.inputItems = items;
+            inventory.inputFluid = fluid;
         }
 
         @Override
         public ItemStack[] getItemInputs() {
             if (isEmpty()) return new ItemStack[0];
-            return Arrays.stream(itemInventory)
+            return Arrays.stream(inventory.inputItems)
                 .filter(Objects::nonNull)
                 .toArray(ItemStack[]::new);
         }
@@ -62,23 +63,28 @@ public class GT_MetaTileEntity_Hatch_DualInput extends MTEHatchInputBus implemen
         @Override
         public FluidStack[] getFluidInputs() {
             if (isEmpty()) return new FluidStack[0];
-            return Arrays.stream(fluidInventory)
+            return Arrays.stream(inventory.inputFluid)
                 .filter(Objects::nonNull)
                 .toArray(FluidStack[]::new);
         }
 
+        @Override
+        public GTDualInputs getPatternInputs() {
+            return inventory;
+        }
+
         public boolean isEmpty() {
-            if (itemInventory != null) {
+            if (inventory.inputItems != null) {
                 // Circuit slot is the last slot; catalyst slots are the second & third to last slots. Will not check
                 // them
-                for (int i = 0; i < itemInventory.length - 3; i++) {
-                    if (itemInventory[i] != null && itemInventory[i].stackSize > 0) {
+                for (int i = 0; i < inventory.inputItems.length - 3; i++) {
+                    if (inventory.inputItems[i] != null && inventory.inputItems[i].stackSize > 0) {
                         return false;
                     }
                 }
             }
-            if (fluidInventory != null) {
-                for (FluidStack fluid : fluidInventory) {
+            if (inventory.inputFluid != null) {
+                for (FluidStack fluid : inventory.inputFluid) {
                     if (fluid != null && fluid.amount > 0) {
                         return false;
                     }
@@ -277,6 +283,16 @@ public class GT_MetaTileEntity_Hatch_DualInput extends MTEHatchInputBus implemen
     @Override
     public boolean supportsFluids() {
         return true;
+    }
+
+    @Override
+    public ItemStack[] getSharedItems() {
+        return new ItemStack[0];
+    }
+
+    @Override
+    public boolean needClearRecipeMap() {
+        return false;
     }
 
     @Override
