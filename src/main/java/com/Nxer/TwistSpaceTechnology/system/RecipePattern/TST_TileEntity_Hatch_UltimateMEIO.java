@@ -79,6 +79,7 @@ import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.modularui.IAddGregtechLogo;
 import gregtech.api.interfaces.modularui.IAddUIWidgets;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
+import gregtech.api.logic.ProcessingLogic;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.implementations.MTEHatch;
 import gregtech.api.objects.GTDualInputs;
@@ -939,9 +940,7 @@ public class TST_TileEntity_Hatch_UltimateMEIO extends MTEHatch
     }
 
     @Override
-    public boolean needClearRecipeMap() {
-        return false;
-    }
+    public void setProcessingLogic(ProcessingLogic pl) {}
 
     @Override
     public List<ItemStack> getItemsForHoloGlasses() {

@@ -26,6 +26,7 @@ import gregtech.api.gui.modularui.GTUITextures;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.modularui.IAddUIWidgets;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
+import gregtech.api.logic.ProcessingLogic;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.implementations.MTEHatchInputBus;
 import gregtech.api.objects.GTDualInputs;
@@ -291,9 +292,7 @@ public class GT_MetaTileEntity_Hatch_DualInput extends MTEHatchInputBus implemen
     }
 
     @Override
-    public boolean needClearRecipeMap() {
-        return false;
-    }
+    public void setProcessingLogic(ProcessingLogic pl) {}
 
     @Override
     public boolean canTankBeFilled() {
