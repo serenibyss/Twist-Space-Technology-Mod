@@ -1,7 +1,5 @@
 package com.Nxer.TwistSpaceTechnology.util.enums;
 
-import org.jetbrains.annotations.ApiStatus;
-
 /**
  * @deprecated use GregTech ones.
  *
@@ -10,7 +8,6 @@ import org.jetbrains.annotations.ApiStatus;
  * @see gregtech.api.util.GTUtility#getColoredTierNameFromVoltage(long)
  * @see gregtech.api.util.GTUtility#getTierNameWithParentheses(long)
  */
-@ApiStatus.Obsolete
 public class TierName {
 
     public static final String[] VoltageName = { "ULV", "LV", "MV", "HV", "EV", "IV", "LuV", "ZPM", "UV", "UHV", "UEV",

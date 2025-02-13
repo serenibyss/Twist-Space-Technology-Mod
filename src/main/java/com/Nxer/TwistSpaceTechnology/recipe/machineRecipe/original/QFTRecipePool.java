@@ -2,6 +2,8 @@ package com.Nxer.TwistSpaceTechnology.recipe.machineRecipe.original;
 
 import static com.Nxer.TwistSpaceTechnology.util.enums.TierEU.RECIPE_UHV;
 import static com.Nxer.TwistSpaceTechnology.util.enums.TierEU.RECIPE_UV;
+import static gregtech.api.util.GTRecipeConstants.QFT_CATALYST;
+import static gregtech.api.util.GTRecipeConstants.QFT_FOCUS_TIER;
 
 import com.Nxer.TwistSpaceTechnology.recipe.IRecipePool;
 
@@ -98,9 +100,7 @@ public class QFTRecipePool implements IRecipePool {
 
         // FeTiO3
         GTValues.RA.stdBuilder()
-            .itemInputs(
-                Materials.Ilmenite.getDust(32),
-                ItemUtils.getSimpleStack(GenericChem.mTitaTungstenIndiumCatalyst, 0))
+            .itemInputs(Materials.Ilmenite.getDust(32))
             .itemOutputs(
                 Materials.Iron.getDust(64),
                 Materials.Titanium.getDust(64),
@@ -110,16 +110,15 @@ public class QFTRecipePool implements IRecipePool {
                 Materials.Magnesium.getDust(64))
             .outputChances(1667, 1667, 1667, 1667, 1667, 1667)
             .noOptimize()
-            .specialValue(1)
+            .metadata(QFT_CATALYST, ItemUtils.getSimpleStack(GenericChem.mTitaTungstenIndiumCatalyst, 0))
+            .metadata(QFT_FOCUS_TIER, 1)
             .eut(RECIPE_UV)
             .duration(400)
             .addTo(QFT);
 
         // Samarium
         GTValues.RA.stdBuilder()
-            .itemInputs(
-                WerkstoffMaterialPool.SamariumOreConcentrate.get(OrePrefixes.dust, 32),
-                ItemUtils.getSimpleStack(GenericChem.mRareEarthGroupCatalyst, 0))
+            .itemInputs(WerkstoffMaterialPool.SamariumOreConcentrate.get(OrePrefixes.dust, 32))
             .itemOutputs(
                 Materials.Samarium.getDust(64),
                 Materials.Gadolinium.getDust(64),
@@ -128,16 +127,15 @@ public class QFTRecipePool implements IRecipePool {
                 WerkstoffLoader.Thorium232.get(OrePrefixes.dust, 64))
             .outputChances(2000, 2000, 2000, 2000, 2000)
             .noOptimize()
-            .specialValue(2)
+            .metadata(QFT_CATALYST, ItemUtils.getSimpleStack(GenericChem.mRareEarthGroupCatalyst, 0))
+            .metadata(QFT_FOCUS_TIER, 2)
             .eut(RECIPE_UHV)
             .duration(400)
             .addTo(QFT);
 
         // Cerium
         GTValues.RA.stdBuilder()
-            .itemInputs(
-                WerkstoffMaterialPool.CeriumRichMixture.get(OrePrefixes.dust, 32),
-                ItemUtils.getSimpleStack(GenericChem.mRareEarthGroupCatalyst, 0))
+            .itemInputs(WerkstoffMaterialPool.CeriumRichMixture.get(OrePrefixes.dust, 32))
             .itemOutputs(
                 Materials.Cerium.getDust(64),
                 Materials.Lanthanum.getDust(64),
@@ -147,7 +145,8 @@ public class QFTRecipePool implements IRecipePool {
                 Materials.Uranium235.getDust(64))
             .outputChances(1667, 1667, 1667, 1667, 1667, 1667)
             .noOptimize()
-            .specialValue(2)
+            .metadata(QFT_CATALYST, ItemUtils.getSimpleStack(GenericChem.mRareEarthGroupCatalyst, 0))
+            .metadata(QFT_FOCUS_TIER, 2)
             .eut(RECIPE_UHV)
             .duration(400)
             .addTo(QFT);

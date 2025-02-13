@@ -1,7 +1,5 @@
 package com.Nxer.TwistSpaceTechnology.util;
 
-import org.jetbrains.annotations.ApiStatus;
-
 /**
  *
  */
@@ -197,12 +195,10 @@ public enum TextEnums {
     StructureTooComplex("StructureTooComplex");
 
     // spotless:on
-    @ApiStatus.Obsolete
     public static String tr(String key) {
         return TstUtils.tr(key);
     }
 
-    @ApiStatus.Obsolete
     public static String tr(String key, Object... format) {
         return TstUtils.tr(key, format);
     }
