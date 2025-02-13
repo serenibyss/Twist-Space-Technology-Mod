@@ -6,7 +6,7 @@ import java.util.Optional;
 
 import net.minecraft.item.ItemStack;
 
-import com.Nxer.TwistSpaceTechnology.common.GTCMItemList;
+import com.Nxer.TwistSpaceTechnology.common.init.GTCMItemList;
 import com.Nxer.TwistSpaceTechnology.common.recipeMap.NEISpecialInfoFormatters.ArtificialStar_SpecialValueFormatter;
 import com.Nxer.TwistSpaceTechnology.common.recipeMap.NEISpecialInfoFormatters.DSP_Receiver_SpecialValueFormatter;
 import com.Nxer.TwistSpaceTechnology.common.recipeMap.recipeMapFrontends.TST_AquaticZoneSimulatorFronted;
@@ -377,6 +377,17 @@ public class GTCMRecipe {
         .of("tst.recipe.MegaStoneBreakerRecipes", TST_RecipeMapBackend::new)
         .maxIO(2, 1, 0, 0)
         .neiHandlerInfo(builder -> builder.setDisplayStack(GTCMItemList.MegaStoneBreaker.get(1)))
+        .disableOptimize()
+        .build();
+
+    // #tr tst.recipe.IndustrialAlchemyTowerRecipe
+    // # Industrial Alchemy Tower
+    // #zh_CN 工业炼金塔
+    public static final RecipeMap<RecipeMapBackend> IndustrialAlchemyTowerRecipe = RecipeMapBuilder
+        .of("tst.recipe.IndustrialAlchemyTowerRecipe")
+        .maxIO(2, 1, 0, 0)
+        .neiHandlerInfo(builder -> builder.setDisplayStack(GTCMItemList.IndustrialAlchemyTower.get(1)))
+        .useSpecialSlot()
         .disableOptimize()
         .build();
 }

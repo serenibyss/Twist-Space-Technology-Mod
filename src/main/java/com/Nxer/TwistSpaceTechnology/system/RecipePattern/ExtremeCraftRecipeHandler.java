@@ -3,7 +3,7 @@ package com.Nxer.TwistSpaceTechnology.system.RecipePattern;
 import static com.Nxer.TwistSpaceTechnology.TwistSpaceTechnology.LOG;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -11,9 +11,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
-import com.Nxer.TwistSpaceTechnology.common.GTCMItemList;
+import com.Nxer.TwistSpaceTechnology.common.init.GTCMItemList;
 import com.Nxer.TwistSpaceTechnology.common.recipeMap.recipeMapFrontends.TST_GeneralFrontend;
-import com.Nxer.TwistSpaceTechnology.util.Utils;
 import com.Nxer.TwistSpaceTechnology.util.rewrites.TST_ItemID;
 
 import fox.spiteful.avaritia.crafting.ExtremeCraftingManager;
@@ -25,6 +24,7 @@ import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.RecipeMapBackend;
 import gregtech.api.recipe.RecipeMapBuilder;
 import gregtech.api.util.GTOreDictUnificator;
+import gregtech.api.util.GTUtility;
 
 public class ExtremeCraftRecipeHandler {
 
@@ -50,7 +50,7 @@ public class ExtremeCraftRecipeHandler {
     }
 
     protected ItemStack[] sortOutInputs(ItemStack... in) {
-        Map<TST_ItemID, ItemStack> inputsMap = new HashMap<>();
+        Map<TST_ItemID, ItemStack> inputsMap = new LinkedHashMap<>();
         for (ItemStack is : in) {
             if (is == null || is.stackSize < 1) continue;
             TST_ItemID itemID = TST_ItemID.create(is);
@@ -61,7 +61,7 @@ public class ExtremeCraftRecipeHandler {
     }
 
     protected ItemStack[] sortOutInputs(Object... in) {
-        Map<Object, Integer> inputsMap = new HashMap<>();
+        Map<Object, Integer> inputsMap = new LinkedHashMap<>();
         for (Object o : in) {
             if (o == null) continue;
             inputsMap.merge(o, 1, Integer::sum);
@@ -71,7 +71,7 @@ public class ExtremeCraftRecipeHandler {
         for (Map.Entry<Object, Integer> oe : inputsMap.entrySet()) {
             Object o = oe.getKey();
             if (o instanceof ItemStack i) {
-                sorted.add(Utils.setStackSize(i.copy(), oe.getValue()));
+                sorted.add(GTUtility.copyAmountUnsafe(oe.getValue(), i));
             } else if (o instanceof ArrayList) {
                 ArrayList<ItemStack> il = (ArrayList) o;
                 ItemStack first = il.get(0);
@@ -80,7 +80,7 @@ public class ExtremeCraftRecipeHandler {
                     continue;
                 }
                 ItemStack target = GTOreDictUnificator.get(false, first, true);
-                sorted.add(Utils.setStackSize(target.copy(), oe.getValue()));
+                sorted.add(GTUtility.copyAmountUnsafe(oe.getValue(), target));
             } else {
                 LOG.info("ERROR ExtremeCraftRecipeHandler.sortOutInputs catch unknown type");
             }

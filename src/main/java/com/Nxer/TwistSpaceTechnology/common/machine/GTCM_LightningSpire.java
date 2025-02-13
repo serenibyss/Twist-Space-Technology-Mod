@@ -315,12 +315,12 @@ public class GTCM_LightningSpire extends TT_MultiMachineBase_EM implements ICons
                     if (null == machine || machine.stackSize < 1) continue;
                     if (LightningRod.equalItemStack(machine)) {
                         if (canAdd > machine.stackSize) {
-                            mStored.add(GTUtility.copy(machine));
+                            mStored.add(machine.copy());
                             tRods += machine.stackSize;
                             canAdd -= machine.stackSize;
                             machine.stackSize = 0;
                         } else {
-                            mStored.add(GTUtility.copyAmount(MAXRODS - tRods, machine));
+                            mStored.add(GTUtility.copyAmountUnsafe(MAXRODS - tRods, machine));
                             machine.stackSize -= canAdd;
                             tRods = MAXRODS;
                             break;

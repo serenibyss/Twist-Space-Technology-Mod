@@ -1,6 +1,6 @@
 package com.Nxer.TwistSpaceTechnology.util;
 
-import static net.minecraft.util.StatCollector.translateToLocalFormatted;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  *
@@ -14,6 +14,11 @@ public enum TextEnums {
     // # {\RED}Twist Space Technology
     // #zh_CN {\RED}Twist Space Technology
     Mod_TwistSpaceTechnology("Mod_TwistSpaceTechnology"),
+
+    // #tr Machine_of_TwistSpaceTechnology
+    // # {\BOLD}{\BLUE}Twist {\AQUA}Space {\YELLOW}Technology{\RESET} is honored to serve you
+    // #zh_CN {\BOLD}{\BLUE}Twist {\AQUA}Space {\YELLOW}Technology{\RESET} 很荣幸为您服务!
+    Machine_of_TwistSpaceTechnology("Machine_of_TwistSpaceTechnology"),
 
     // #tr Author_Goderium
     // # Author: {\WHITE}{\BOLD}Goderium_
@@ -192,12 +197,14 @@ public enum TextEnums {
     StructureTooComplex("StructureTooComplex");
 
     // spotless:on
+    @ApiStatus.Obsolete
     public static String tr(String key) {
-        return translateToLocalFormatted(key);
+        return TstUtils.tr(key);
     }
 
+    @ApiStatus.Obsolete
     public static String tr(String key, Object... format) {
-        return translateToLocalFormatted(key, format);
+        return TstUtils.tr(key, format);
     }
 
     private final String text;

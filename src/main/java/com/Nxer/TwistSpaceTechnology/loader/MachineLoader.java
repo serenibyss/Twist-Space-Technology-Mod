@@ -1,15 +1,16 @@
 package com.Nxer.TwistSpaceTechnology.loader;
 
+import static com.Nxer.TwistSpaceTechnology.config.Config.Enable_GiantVacuumDryingFurnace;
+import static com.Nxer.TwistSpaceTechnology.config.Config.Enable_IndustrialAlchemyTower;
 import static com.Nxer.TwistSpaceTechnology.config.Config.Enable_MegaStoneBreaker;
 import static com.Nxer.TwistSpaceTechnology.config.Config.ParallelOfParallelController;
 import static com.Nxer.TwistSpaceTechnology.config.Config.PowerConsumptionMultiplierOfPowerConsumptionController;
 import static com.Nxer.TwistSpaceTechnology.config.Config.SpeedMultiplierOfSpeedController;
-import static com.Nxer.TwistSpaceTechnology.util.TextLocalization.NameElvenWorkshop;
 
 import net.minecraft.entity.EntityList;
 import net.minecraft.item.ItemStack;
 
-import com.Nxer.TwistSpaceTechnology.common.GTCMItemList;
+import com.Nxer.TwistSpaceTechnology.common.init.GTCMItemList;
 import com.Nxer.TwistSpaceTechnology.common.machine.GTCM_CrystallineInfinitier;
 import com.Nxer.TwistSpaceTechnology.common.machine.GTCM_ElvenWorkshop;
 import com.Nxer.TwistSpaceTechnology.common.machine.GTCM_HyperSpacetimeTransformer;
@@ -40,9 +41,11 @@ import com.Nxer.TwistSpaceTechnology.common.machine.TST_Computer;
 import com.Nxer.TwistSpaceTechnology.common.machine.TST_CoreDeviceOfHumanPowerGenerationFacility;
 import com.Nxer.TwistSpaceTechnology.common.machine.TST_DeployedNanoCore;
 import com.Nxer.TwistSpaceTechnology.common.machine.TST_EyeOfWood;
+import com.Nxer.TwistSpaceTechnology.common.machine.TST_GiantVacuumDryingFurnace;
 import com.Nxer.TwistSpaceTechnology.common.machine.TST_HephaestusAtelier;
 import com.Nxer.TwistSpaceTechnology.common.machine.TST_IncompactCyclotron;
 import com.Nxer.TwistSpaceTechnology.common.machine.TST_IndistinctTentacle;
+import com.Nxer.TwistSpaceTechnology.common.machine.TST_IndustrialAlchemyTower;
 import com.Nxer.TwistSpaceTechnology.common.machine.TST_IndustrialMagnetarSeparator;
 import com.Nxer.TwistSpaceTechnology.common.machine.TST_LargeCanner;
 import com.Nxer.TwistSpaceTechnology.common.machine.TST_LargeIndustrialCokingFactory;
@@ -55,6 +58,7 @@ import com.Nxer.TwistSpaceTechnology.common.machine.TST_MegaStoneBreaker;
 import com.Nxer.TwistSpaceTechnology.common.machine.TST_MegaTreeFarm;
 import com.Nxer.TwistSpaceTechnology.common.machine.TST_MicroSpaceTimeFabricatorio;
 import com.Nxer.TwistSpaceTechnology.common.machine.TST_MiracleDoor;
+import com.Nxer.TwistSpaceTechnology.common.machine.TST_ProcessingArray;
 import com.Nxer.TwistSpaceTechnology.common.machine.TST_Scavenger;
 import com.Nxer.TwistSpaceTechnology.common.machine.TST_SpaceApiary;
 import com.Nxer.TwistSpaceTechnology.common.machine.TST_StarcoreMiner;
@@ -69,10 +73,10 @@ import com.Nxer.TwistSpaceTechnology.common.machine.singleBlock.hatch.GT_Hatch_W
 import com.Nxer.TwistSpaceTechnology.common.machine.singleBlock.hatch.GT_Hatch_WirelessData_output;
 import com.Nxer.TwistSpaceTechnology.common.machine.singleBlock.hatch.GT_MetaTileEntity_Hatch_Air;
 import com.Nxer.TwistSpaceTechnology.common.machine.singleBlock.hatch.GT_MetaTileEntity_Hatch_DualInput;
-import com.Nxer.TwistSpaceTechnology.common.machine.singleBlock.hatch.GT_MetaTileEntity_Hatch_Mana;
 import com.Nxer.TwistSpaceTechnology.common.machine.singleBlock.hatch.GT_MetaTileEntity_Hatch_UncertaintyDebug;
 import com.Nxer.TwistSpaceTechnology.common.machine.singleBlock.hatch.GT_MetaTileEntity_Pipe_EnergySmart;
 import com.Nxer.TwistSpaceTechnology.common.machine.singleBlock.hatch.TST_BloodOrbHatch;
+import com.Nxer.TwistSpaceTechnology.common.machine.singleBlock.hatch.TST_ManaHatch;
 import com.Nxer.TwistSpaceTechnology.common.modularizedMachine.MM_DimensionallyTranscendentMatterPlasmaForgePrototypeMK2;
 import com.Nxer.TwistSpaceTechnology.common.modularizedMachine.MM_IndistinctTentaclePrototypeMK2;
 import com.Nxer.TwistSpaceTechnology.common.modularizedMachine.MM_LargeNeutronOscillator;
@@ -97,8 +101,9 @@ import com.Nxer.TwistSpaceTechnology.system.DysonSphereProgram.machines.TST_Stra
 import com.Nxer.TwistSpaceTechnology.system.OreProcess.machines.TST_OreProcessingFactory;
 import com.Nxer.TwistSpaceTechnology.util.TextEnums;
 import com.Nxer.TwistSpaceTechnology.util.TextLocalization;
-import com.Nxer.TwistSpaceTechnology.util.Utils;
+import com.Nxer.TwistSpaceTechnology.util.TstUtils;
 
+@SuppressWarnings("deprecation") // ignore deprecation for TextLocalization
 public class MachineLoader {
 
     public static ItemStack IntensifyChemicalDistorter; // INTENSIFY_CHEMICAL_DISTORTER
@@ -138,6 +143,7 @@ public class MachineLoader {
     public static ItemStack LargeSteamForgeHammer;
     public static ItemStack LargeSteamAlloySmelter;
     public static ItemStack IndustrialMagicMatrix;
+    public static ItemStack IndustrialAlchemyTower;
     public static ItemStack EyeOfWood;
     public static ItemStack BeeEngineer;
     public static ItemStack MegaMacerator;
@@ -153,7 +159,6 @@ public class MachineLoader {
     public static ItemStack SpaceApiaryT2;
     public static ItemStack SpaceApiaryT3;
     public static ItemStack SpaceApiaryT4;
-    public static ItemStack SpaceModuleTest;
     public static ItemStack LargeCanner;
     public static ItemStack IndustrialMagnetarSeparator;
     public static ItemStack MegaTreeFarm;
@@ -170,7 +175,8 @@ public class MachineLoader {
     public static ItemStack BloodyHell;
     public static ItemStack MegaStoneBreaer;
     public static ItemStack ManufacturingCenter;
-
+    public static ItemStack GiantVacuumDryingFurnace;
+    public static ItemStack ProcessingArray;
     // Single Block
     public static ItemStack InfiniteAirHatch;
     public static ItemStack ManaHatch;
@@ -399,7 +405,8 @@ public class MachineLoader {
         GTCMItemList.LargeIndustrialCokingFactory.set(LargeIndustrialCokingFactory);
 
         //
-        ElvenWorkshop = new GTCM_ElvenWorkshop(19500, "NameElvenWorkshop", NameElvenWorkshop).getStackForm(1);
+        ElvenWorkshop = new GTCM_ElvenWorkshop(19500, "NameElvenWorkshop", TextLocalization.NameElvenWorkshop)
+            .getStackForm(1);
         GTCMItemList.ElvenWorkshop.set(ElvenWorkshop);
 
         //
@@ -739,6 +746,36 @@ public class MachineLoader {
             TextEnums.tr("NameManufacturingCenter")).getStackForm(1);
         GTCMItemList.ManufacturingCenter.set(ManufacturingCenter);
 
+        if (Enable_IndustrialAlchemyTower) {
+            IndustrialAlchemyTower = new TST_IndustrialAlchemyTower(
+                // #tr NameIndustrialAlchemyTower
+                // # Industrial Alchemy Tower
+                // #zh_CN 工业炼金塔
+                19064,
+                "IndustrialAlchemyTower",
+                TextEnums.tr("NameIndustrialAlchemyTower")).getStackForm(1);
+            GTCMItemList.IndustrialAlchemyTower.set(IndustrialAlchemyTower);
+        }
+
+        // #tr NameGiantVacuumDryingFurnace
+        // # Giant Vacuum Drying Furnace
+        // #zh_CN 巨型真空干燥炉
+        if (Enable_GiantVacuumDryingFurnace) {
+            GiantVacuumDryingFurnace = new TST_GiantVacuumDryingFurnace(
+                19065,
+                "GiantVacuumDryingFurnace",
+                TextEnums.tr("NameGiantVacuumDryingFurnace")).getStackForm(1);
+            GTCMItemList.GiantVacuumDryingFurnace.set(GiantVacuumDryingFurnace);
+        }
+
+        if (Config.Enable_ProcessingArray) {
+            // #tr NameProcessingArray
+            // # TST Processing Array
+            // #zh_CN TST处理阵列
+            ProcessingArray = new TST_ProcessingArray(19066, "NameProcessingArray", TextEnums.tr("NameProcessingArray"))
+                .getStackForm(1);
+            GTCMItemList.ProcessingArray.set(ProcessingArray);
+        }
         // endregion
 
         // region Single block Machine
@@ -760,8 +797,7 @@ public class MachineLoader {
         GTCMItemList.InfiniteWirelessDynamoHatch.set(InfiniteWirelessDynamoHatch);
 
         //
-        ManaHatch = new GT_MetaTileEntity_Hatch_Mana(18979, "NameManaHatch", TextLocalization.NameManaHatch, 9)
-            .getStackForm(1);
+        ManaHatch = new TST_ManaHatch(18979, "NameManaHatch", TextLocalization.NameManaHatch, 9).getStackForm(1);
         GTCMItemList.ManaHatch.set(ManaHatch);
 
         // region Dual Input Buffer
@@ -798,98 +834,98 @@ public class MachineLoader {
         BufferedEnergyHatchLV = new GT_Hatch_BufferedEnergyHatch(
             18984,
             "NameBufferedEnergyHatchLV",
-            Utils.i18n("NameBufferedEnergyHatchLV"),
+            TstUtils.tr("NameBufferedEnergyHatchLV"),
             1,
             16,
             null).getStackForm(1);
         BufferedEnergyHatchMV = new GT_Hatch_BufferedEnergyHatch(
             18985,
             "NameBufferedEnergyHatchMV",
-            Utils.i18n("NameBufferedEnergyHatchMV"),
+            TstUtils.tr("NameBufferedEnergyHatchMV"),
             2,
             16,
             null).getStackForm(1);
         BufferedEnergyHatchHV = new GT_Hatch_BufferedEnergyHatch(
             18986,
             "NameBufferedEnergyHatchHV",
-            Utils.i18n("NameBufferedEnergyHatchHV"),
+            TstUtils.tr("NameBufferedEnergyHatchHV"),
             3,
             16,
             null).getStackForm(1);
         BufferedEnergyHatchEV = new GT_Hatch_BufferedEnergyHatch(
             18987,
             "NameBufferedEnergyHatchEV",
-            Utils.i18n("NameBufferedEnergyHatchEV"),
+            TstUtils.tr("NameBufferedEnergyHatchEV"),
             4,
             16,
             null).getStackForm(1);
         BufferedEnergyHatchIV = new GT_Hatch_BufferedEnergyHatch(
             18988,
             "NameBufferedEnergyHatchIV",
-            Utils.i18n("NameBufferedEnergyHatchIV"),
+            TstUtils.tr("NameBufferedEnergyHatchIV"),
             5,
             16,
             null).getStackForm(1);
         BufferedEnergyHatchLuV = new GT_Hatch_BufferedEnergyHatch(
             18989,
             "NameBufferedEnergyHatchLuV",
-            Utils.i18n("NameBufferedEnergyHatchLuV"),
+            TstUtils.tr("NameBufferedEnergyHatchLuV"),
             6,
             16,
             null).getStackForm(1);
         BufferedEnergyHatchZPM = new GT_Hatch_BufferedEnergyHatch(
             18990,
             "NameBufferedEnergyHatchZPM",
-            Utils.i18n("NameBufferedEnergyHatchZPM"),
+            TstUtils.tr("NameBufferedEnergyHatchZPM"),
             7,
             16,
             null).getStackForm(1);
         BufferedEnergyHatchUV = new GT_Hatch_BufferedEnergyHatch(
             18991,
             "NameBufferedEnergyHatchUV",
-            Utils.i18n("NameBufferedEnergyHatchUV"),
+            TstUtils.tr("NameBufferedEnergyHatchUV"),
             8,
             16,
             null).getStackForm(1);
         BufferedEnergyHatchUHV = new GT_Hatch_BufferedEnergyHatch(
             18992,
             "NameBufferedEnergyHatchUHV",
-            Utils.i18n("NameBufferedEnergyHatchUHV"),
+            TstUtils.tr("NameBufferedEnergyHatchUHV"),
             9,
             16,
             null).getStackForm(1);
         BufferedEnergyHatchUEV = new GT_Hatch_BufferedEnergyHatch(
             18993,
             "NameBufferedEnergyHatchUEV",
-            Utils.i18n("NameBufferedEnergyHatchUEV"),
+            TstUtils.tr("NameBufferedEnergyHatchUEV"),
             10,
             16,
             null).getStackForm(1);
         BufferedEnergyHatchUIV = new GT_Hatch_BufferedEnergyHatch(
             18994,
             "NameBufferedEnergyHatchUIV",
-            Utils.i18n("NameBufferedEnergyHatchUIV"),
+            TstUtils.tr("NameBufferedEnergyHatchUIV"),
             11,
             16,
             null).getStackForm(1);
         BufferedEnergyHatchUMV = new GT_Hatch_BufferedEnergyHatch(
             18995,
             "NameBufferedEnergyHatchUMV",
-            Utils.i18n("NameBufferedEnergyHatchUMV"),
+            TstUtils.tr("NameBufferedEnergyHatchUMV"),
             12,
             16,
             null).getStackForm(1);
         BufferedEnergyHatchUXV = new GT_Hatch_BufferedEnergyHatch(
             18996,
             "NameBufferedEnergyHatchUXV",
-            Utils.i18n("NameBufferedEnergyHatchUXV"),
+            TstUtils.tr("NameBufferedEnergyHatchUXV"),
             13,
             16,
             null).getStackForm(1);
         BufferedEnergyHatchMAX = new GT_Hatch_BufferedEnergyHatch(
             18997,
             "NameBufferedEnergyHatchMAX",
-            Utils.i18n("NameBufferedEnergyHatchMAX"),
+            TstUtils.tr("NameBufferedEnergyHatchMAX"),
             14,
             16,
             null).getStackForm(1);

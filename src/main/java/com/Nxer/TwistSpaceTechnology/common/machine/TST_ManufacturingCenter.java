@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -16,12 +17,13 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import org.intellij.lang.annotations.MagicConstant;
 import org.jetbrains.annotations.NotNull;
 
-import com.Nxer.TwistSpaceTechnology.common.block.blockClass.Casings.multiuse.BlockMultiUseCore;
+import com.Nxer.TwistSpaceTechnology.common.block.meta.multiuse.BlockMultiUseCore;
+import com.Nxer.TwistSpaceTechnology.config.Config;
 import com.Nxer.TwistSpaceTechnology.util.TextEnums;
-import com.Nxer.TwistSpaceTechnology.util.TextWithColor;
-import com.github.bsideup.jabel.Desugar;
+import com.Nxer.TwistSpaceTechnology.util.TstSharedFormat;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
@@ -56,15 +58,15 @@ import gtPlusPlus.xmod.gregtech.common.blocks.textures.TexturesGtBlock;
 public class TST_ManufacturingCenter extends GTPPMultiBlockBase<TST_ManufacturingCenter>
     implements ISurvivalConstructable {
 
-    private static final int LOWEST_CORE_TIER = 5;
+    @MagicConstant(valuesFromClass = VoltageIndex.class)
+    private static final int LOWEST_CORE_TIER = VoltageIndex.IV;
 
-    private static final double SPEED_BONUS_BASE = 0.2F;
-    private static final double SPEED_BONUS_FOR_CORE_TIER = 0.5F;
+    private static final double SPEED_BONUS_BASE = Config.ManufacturingCenter_SpeedBonus_Base;
+    private static final double SPEED_BONUS_FOR_CORE_TIER = Config.ManufacturingCenter_SpeedBonus_Tier;
 
-    // for core tier at ZPM and UV
-    private static final double EU_REDUCTION_FOR_CORE_TIER = 0.2F;
+    private static final double EU_REDUCTION_FOR_CORE_TIER = Config.ManufacturingCenter_PowerReduction;
 
-    private static final int MAX_PARALLEL_MODIFIER = 2;
+    private static final int MAX_PARALLEL_MODIFIER = Config.ManufacturingCenter_MaxParallelModifier;
 
     public int coreTier = -1;
     public int casingCount = 0;
@@ -86,8 +88,17 @@ public class TST_ManufacturingCenter extends GTPPMultiBlockBase<TST_Manufacturin
 
     private static final BiMap<Integer, ManufacturingMachineType> MODES = HashBiMap.create();
 
-    @Desugar
-    private record ManufacturingMachineType(String typeName, RecipeMap<?> recipeMap, String unlocalizedName) {
+    private static final class ManufacturingMachineType {
+
+        private final String typeName;
+        private final RecipeMap<?> recipeMap;
+        private final String unlocalizedName;
+
+        private ManufacturingMachineType(String typeName, RecipeMap<?> recipeMap, String unlocalizedName) {
+            this.typeName = typeName;
+            this.recipeMap = recipeMap;
+            this.unlocalizedName = unlocalizedName;
+        }
 
         public static ManufacturingMachineType of(RecipeMap<?> recipeMap) {
             var recipeMapNameParts = recipeMap.unlocalizedName.split("\\.");
@@ -96,6 +107,46 @@ public class TST_ManufacturingCenter extends GTPPMultiBlockBase<TST_Manufacturin
                 recipeMap,
                 recipeMap.unlocalizedName);
         }
+
+        public String typeName() {
+            return typeName;
+        }
+
+        public RecipeMap<?> recipeMap() {
+            return recipeMap;
+        }
+
+        public String unlocalizedName() {
+            return unlocalizedName;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == this) return true;
+            if (obj == null || obj.getClass() != this.getClass()) return false;
+            var that = (ManufacturingMachineType) obj;
+            return Objects.equals(this.typeName, that.typeName) && Objects.equals(this.recipeMap, that.recipeMap)
+                && Objects.equals(this.unlocalizedName, that.unlocalizedName);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(typeName, recipeMap, unlocalizedName);
+        }
+
+        @Override
+        public String toString() {
+            return "ManufacturingMachineType[" + "typeName="
+                + typeName
+                + ", "
+                + "recipeMap="
+                + recipeMap
+                + ", "
+                + "unlocalizedName="
+                + unlocalizedName
+                + ']';
+        }
+
     }
 
     static {
@@ -132,7 +183,7 @@ public class TST_ManufacturingCenter extends GTPPMultiBlockBase<TST_Manufacturin
     }
 
     private double getEuModifierAtCurrentCore() {
-        return 1.0 - (EU_REDUCTION_FOR_CORE_TIER * Math.max(0, coreTier - LOWEST_CORE_TIER - 2));
+        return 1.0 - (EU_REDUCTION_FOR_CORE_TIER * Math.max(0, coreTier - LOWEST_CORE_TIER));
     }
 
     // endregion
@@ -183,17 +234,22 @@ public class TST_ManufacturingCenter extends GTPPMultiBlockBase<TST_Manufacturin
     // region Tooltips
 
     @Override
+    @Deprecated
     public String getMachineType() {
-        return "Manufacturing Center | Nine in One";
+        return null;
     }
 
     @Override
     protected MultiblockTooltipBuilder createTooltip() {
         var tt = new MultiblockTooltipBuilder();
 
-        TextWithColor.setDefaultColor(EnumChatFormatting.GRAY);
+        // spotless:off
+        TstSharedFormat.setDefaultColor(EnumChatFormatting.GRAY);
 
-        tt.addMachineType(getMachineType())
+        // #tr ManufacturingCenter_Tooltips_MachineType
+        // # Manufacturing Center | Nine in One
+        // #zh_CN 加工中心 | 九合一
+        tt.addMachineType(TextEnums.tr("ManufacturingCenter_Tooltips_MachineType"))
             // #tr ManufacturingCenter_Tooltips_1
             // # A Combination of Machines.
             // #zh_CN 一些机器的组合。
@@ -205,7 +261,7 @@ public class TST_ManufacturingCenter extends GTPPMultiBlockBase<TST_Manufacturin
             // #tr ManufacturingCenter_Tooltips_3
             // # Manufacturing Center cannot handle recipes over %s.
             // #zh_CN 加工中心不能制作%s以上的配方。
-            .addInfo(TextEnums.tr("ManufacturingCenter_Tooltips_3", TextWithColor.getTierName(VoltageIndex.UHV)))
+            .addInfo(TextEnums.tr("ManufacturingCenter_Tooltips_3", TstSharedFormat.getTierName(VoltageIndex.UHV)))
             // #tr ManufacturingCenter_Tooltips_4
             // # §b20%%§7 faster than single blocks.
             // #zh_CN 比单方块机器快§b20%%§7。
@@ -216,20 +272,20 @@ public class TST_ManufacturingCenter extends GTPPMultiBlockBase<TST_Manufacturin
             .addInfo(
                 TextEnums.tr(
                     "ManufacturingCenter_Tooltips_5",
-                    TextWithColor.getTierName(VoltageIndex.IV),
-                    TextWithColor.percentage(SPEED_BONUS_FOR_CORE_TIER * 100)))
+                    TstSharedFormat.getTierName(LOWEST_CORE_TIER),
+                    TstSharedFormat.percentage(SPEED_BONUS_FOR_CORE_TIER * 100)))
             // #tr ManufacturingCenter_Tooltips_6
             // # Each Core Tier over %s gains §b%s§7 EU/t Reduction.
             // #zh_CN 每级超过%s的核心等级获得§b%s§7的能量减免。
             .addInfo(
                 TextEnums.tr(
                     "ManufacturingCenter_Tooltips_6",
-                    TextWithColor.getTierName(VoltageIndex.LuV),
-                    TextWithColor.percentage(EU_REDUCTION_FOR_CORE_TIER * 100)))
+                    TstSharedFormat.getTierName(LOWEST_CORE_TIER),
+                    TstSharedFormat.percentage(EU_REDUCTION_FOR_CORE_TIER * 100)))
             // #tr ManufacturingCenter_Tooltips_7
             // # Max parallel is §b%s§7 max voltage tier.
             // #zh_CN 最大并行为§b%s§7最大电压等级。
-            .addInfo(TextEnums.tr("ManufacturingCenter_Tooltips_7", TextWithColor.factor(MAX_PARALLEL_MODIFIER)))
+            .addInfo(TextEnums.tr("ManufacturingCenter_Tooltips_7", TstSharedFormat.factor(MAX_PARALLEL_MODIFIER)))
             .addPollutionAmount(getPollutionPerSecond(null))
             .beginStructureBlock(3, 3, 3, false)
             .addController("Front Center")
@@ -246,6 +302,7 @@ public class TST_ManufacturingCenter extends GTPPMultiBlockBase<TST_Manufacturin
             .addInfo(TextEnums.Author_Taskeren.toString())
             .toolTipFinisher(TextEnums.Mod_TwistSpaceTechnology.toString());
 
+        // spotless:on
         return tt;
     }
 

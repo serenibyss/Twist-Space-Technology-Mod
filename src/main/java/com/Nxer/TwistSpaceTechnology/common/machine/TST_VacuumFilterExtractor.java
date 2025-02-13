@@ -18,15 +18,20 @@ import static gregtech.api.enums.Textures.BlockIcons.getCasingTextureForId;
 import static gregtech.api.util.GTStructureUtility.ofFrame;
 import static tectech.thing.casing.TTCasingsContainer.sBlockCasingsTT;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.StatCollector;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.Nxer.TwistSpaceTechnology.common.machine.multiMachineClasses.GTCM_MultiMachineBase;
 import com.Nxer.TwistSpaceTechnology.util.TextLocalization;
-import com.Nxer.TwistSpaceTechnology.util.Utils;
+import com.Nxer.TwistSpaceTechnology.util.TstUtils;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
@@ -106,6 +111,12 @@ public class TST_VacuumFilterExtractor extends GTCM_MultiMachineBase<TST_VacuumF
         return RecipeMaps.distillationTowerRecipes;
     }
 
+    @NotNull
+    @Override
+    public Collection<RecipeMap<?>> getAvailableRecipeMaps() {
+        return Arrays.asList(RecipeMaps.distillationTowerRecipes, RecipeMaps.distilleryRecipes);
+    }
+
     @Override
     protected boolean isEnablePerfectOverclock() {
         // distillery has perfect overclock
@@ -131,7 +142,7 @@ public class TST_VacuumFilterExtractor extends GTCM_MultiMachineBase<TST_VacuumF
     public boolean checkMachine(IGregTechTileEntity aBaseMetaTileEntity, ItemStack aStack) {
         repairMachine();
         if (!checkPiece(STRUCTURE_PIECE_MAIN, horizontalOffSet, verticalOffSet, depthOffSet)) return false;
-        coefficientMultiplier = 1 + (int) Utils.calculatePowerTier(getMaxInputEu());
+        coefficientMultiplier = 1 + (int) TstUtils.calculateVoltageTier(getMaxInputEu());
         return true;
     }
     // endregion

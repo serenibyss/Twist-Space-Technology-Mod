@@ -5,6 +5,7 @@ import static com.Nxer.TwistSpaceTechnology.system.Thaumcraft.TCBasic.EVOLUTION;
 import static fox.spiteful.avaritia.compat.thaumcraft.Lucrum.ULTRA_DEATH;
 import static gregtech.api.enums.TCAspects.ELECTRUM;
 import static gtPlusPlus.core.material.MaterialsAlloy.TITANSTEEL;
+import static gtPlusPlus.xmod.gregtech.api.enums.GregtechItemList.Industrial_AlloyBlastSmelter;
 import static gtPlusPlus.xmod.gregtech.api.enums.GregtechItemList.Industrial_FishingPond;
 import static gtPlusPlus.xmod.gregtech.api.enums.GregtechItemList.Industrial_TreeFarm;
 import static kubatech.api.enums.ItemList.ExtremeEntityCrusher;
@@ -16,8 +17,8 @@ import static thaumcraft.common.config.ConfigBlocks.blockStoneDevice;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 
-import com.Nxer.TwistSpaceTechnology.common.GTCMItemList;
-import com.Nxer.TwistSpaceTechnology.common.block.BasicBlocks;
+import com.Nxer.TwistSpaceTechnology.common.init.GTCMItemList;
+import com.Nxer.TwistSpaceTechnology.common.init.TstBlocks;
 import com.Nxer.TwistSpaceTechnology.config.Config;
 import com.Nxer.TwistSpaceTechnology.recipe.IRecipePool;
 
@@ -31,7 +32,9 @@ import gregtech.api.util.GTOreDictUnificator;
 import thaumcraft.api.ThaumcraftApi;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
+import thaumcraft.api.crafting.CrucibleRecipe;
 import thaumcraft.api.crafting.InfusionRecipe;
+import thaumcraft.common.config.ConfigBlocks;
 import thaumcraft.common.config.ConfigItems;
 import vazkii.botania.common.block.ModBlocks;
 import vazkii.botania.common.item.ModItems;
@@ -46,6 +49,9 @@ public class TCRecipePool implements IRecipePool {
     public static InfusionRecipe infusionRecipeCoagulatedBloodCasing;
     public static InfusionRecipe infusionRecipeBloodHatch;
     public static InfusionRecipe infusionRecipeTimeBendingSpeedRune;
+    public static InfusionRecipe infusionRecipeIndustrialAlchemyTower;
+
+    public static CrucibleRecipe crucibleRecipeArcaneHole;
 
     @Override
     public void loadRecipes() {
@@ -127,7 +133,8 @@ public class TCRecipePool implements IRecipePool {
                         TITANSTEEL.getPlateDense(1),
                         GTOreDictUnificator.get(OrePrefixes.circuit.get(Materials.Infinite), 1),
 
-                        Mods.EnderIO.isModLoaded() ? ExtremeEntityCrusher.get(1) : new ItemStack(diamond_sword, 1),
+                        (Mods.EnderIO.isModLoaded() && Mods.MobsInfo.isModLoaded()) ? ExtremeEntityCrusher.get(1)
+                            : new ItemStack(diamond_sword, 1),
                         GTOreDictUnificator.get(OrePrefixes.circuit.get(Materials.Infinite), 1),
                         TITANSTEEL.getPlateDense(1),
                         GTOreDictUnificator.get(OrePrefixes.circuit.get(Materials.Infinite), 1) });
@@ -199,7 +206,7 @@ public class TCRecipePool implements IRecipePool {
                 }
                 infusionRecipeTimeBendingSpeedRune = ThaumcraftApi.addInfusionCraftingRecipe(
                     "TIME_BENDING_SPEED_RUNE",
-                    new ItemStack(BasicBlocks.timeBendingSpeedRune),
+                    new ItemStack(TstBlocks.TimeBendingSpeedRune),
                     10,
                     new AspectList().merge(Aspect.LIFE, 64)
                         .merge(Aspect.MOTION, 256)
@@ -209,6 +216,32 @@ public class TCRecipePool implements IRecipePool {
                         new ItemStack(WayofTime.alchemicalWizardry.ModBlocks.bloodRune, 1, 5), // Rune of Acceleration
                         new ItemStack(WayofTime.alchemicalWizardry.ModBlocks.bloodRune, 1, 5), });
             }
+            if (Config.Enable_IndustrialAlchemyTower) {
+                infusionRecipeIndustrialAlchemyTower = ThaumcraftApi.addInfusionCraftingRecipe(
+                    "INDUSTRIAL_ALCHEMY_TOWER",
+                    GTCMItemList.IndustrialAlchemyTower.get(1),
+                    16,
+                    new AspectList().merge(Aspect.AIR, 64)
+                        .merge(Aspect.FIRE, 64)
+                        .merge(Aspect.ORDER, 64)
+                        .merge(Aspect.ENTROPY, 64)
+                        .merge(Aspect.EXCHANGE, 64)
+                        .merge(Aspect.MAGIC, 128),
+                    Industrial_AlloyBlastSmelter.get(1),
+                    new ItemStack[] { new ItemStack(blockMetalDevice, 1, 9),
+                        GTOreDictUnificator.get(OrePrefixes.circuit, Materials.IV, 1L), AmorphicCatalyst.getLeft(),
+                        GTOreDictUnificator.get(OrePrefixes.circuit, Materials.IV, 1L),
+                        new ItemStack(blockMetalDevice, 1, 9),
+                        GTOreDictUnificator.get(OrePrefixes.circuit, Materials.IV, 1L), AmorphicCatalyst.getLeft(),
+                        GTOreDictUnificator.get(OrePrefixes.circuit, Materials.IV, 1L) });
+            }
+            crucibleRecipeArcaneHole = ThaumcraftApi.addCrucibleRecipe(
+                "TST_ARCANE_HOLE",
+                new ItemStack(TstBlocks.BlockArcaneHole, 1),
+                new ItemStack(ConfigBlocks.blockCosmeticOpaque, 1, 2),
+                new AspectList().merge(Aspect.VOID, 16)
+                    .merge(Aspect.DARKNESS, 8)
+                    .merge(Aspect.SENSES, 8));
         }
     }
 

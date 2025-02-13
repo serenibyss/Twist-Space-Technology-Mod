@@ -61,11 +61,15 @@ public class Config {
     public static final String MicroSpaceTimeFabricatorio = "Micro SpaceTime Fabricatorio";
     public static final String StrangeMatterAggregator = "Strange Matter Aggregator";
     public static final String BloodHell = "BloodHell";
+    public static final String IndustrialAlchemyTower = "IndustrialAlchemyTower";
+    public static final String ProcessingArray = "ProcessingArray";
+    public static final String MegaCraftingCenter = "MegaCraftingCenter";
     // endregion
 
     // region General
     public static int MAX_PARALLEL_LIMIT = Integer.MAX_VALUE;
     public static boolean DEFAULT_BATCH_MODE = false;
+    public static boolean RewriteEIOTravelStaffConfig = false;
 
     // endregion
 
@@ -231,6 +235,7 @@ public class Config {
     public static int SpeedMultiplier_CrystallineInfinitierMode_CrystallineInfinitier = 1;
     public static int ParallelMultiplier_CrystallineInfinitier = 1;
     public static byte FieldTier_EnablePerfectOverclock_CrystallineInfinitier = 3;
+    public static boolean PerfectCrystalRecipeNonCyclized = false;
     // endregion
 
     // region Scavenger
@@ -323,7 +328,7 @@ public class Config {
     public static boolean Enable_BallLightning = true;
     public static int WirelessModeExtraEuCost_BallLightning = 64;
     public static int WirelessModeTickEveryProcess_BallLightning = 64;
-    // end region
+    // endregion
 
     // region StarcoreMiner
     public static boolean Enable_StarcoreMiner = true;
@@ -445,7 +450,35 @@ public class Config {
     // endregion
 
     // region Machine Base Class
-    public static int DefaultCycleNum_WirelessEnergyMultiMachineBase = 100_000;
+    public static int DefaultCycleNum_WirelessEnergyMultiMachineBase = 100;
+    // endregion
+
+    // region Industrial Alchemy Tower
+    public static boolean Enable_IndustrialAlchemyTower = true;
+    // endregion
+
+    // region ManufacturingCenter
+    public static float ManufacturingCenter_SpeedBonus_Base = 0.2F;
+    public static float ManufacturingCenter_SpeedBonus_Tier = 0.5F;
+    public static float ManufacturingCenter_PowerReduction = 0.15F;
+    public static int ManufacturingCenter_MaxParallelModifier = 2;
+    // endregion
+
+    // region GiantVacuumDryingFurnace
+    public static boolean Enable_GiantVacuumDryingFurnace = true;
+    public static float SpeedMultiplier_CoilTier_GiantVacuumDryingFurnace = 0.5F;
+    public static float SpeedBonus_MultiplyPerVoltageTier_GiantVacuumDryingFurnace = 0.8F;
+    public static int Parallel_PerPiece_GiantVacuumDryingFurnace = 32;
+    // endregion
+
+    // region Processing Array
+    public static boolean Enable_ProcessingArray = true;
+    // endregion
+
+    // region Mega Crafting Center
+    public static boolean Enable_MegaCraftingCenter = true;
+    public static int TickEveryProcess_MegaCraftingCenter = 20;
+    public static int MaxMagnification_MegaCraftingCenter = 8388608;
     // endregion
 
     public static void synchronizeConfiguration(File configFile) {
@@ -454,6 +487,7 @@ public class Config {
         // region General
         MAX_PARALLEL_LIMIT = configuration.getInt("MAX_PARALLEL_LIMIT", GENERAL, MAX_PARALLEL_LIMIT, 1, Integer.MAX_VALUE, "Max parallel limit of normal machines.");
         DEFAULT_BATCH_MODE = configuration.getBoolean("DEFAULT_BATCH_MODE", GENERAL, DEFAULT_BATCH_MODE, "Default Batch mode state of machine when placed. True is auto enable Batch mode.");
+        RewriteEIOTravelStaffConfig = configuration.getBoolean("RewriteEIOTravelStaffConfig", GENERAL, RewriteEIOTravelStaffConfig, "Rewrite EIO Travel Staff Config : Let Travel Staff Max Distance be same as Teleport Staff. Because Yamato's teleportation function is calling the Travel Stuff Source function.");
         // endregion
 
         // region Machine Base Class
@@ -462,6 +496,16 @@ public class Config {
 
         // region Recipe
         Registry_DragonBlood_ExtraRecipe = configuration.getBoolean("Registry_DragonBlood_ExtraRecipe", RECIPE, Registry_DragonBlood_ExtraRecipe, "Registry Dragon Blood Extra Recipes.");
+        // endregion
+
+        // region Mega Crafting Center
+        Enable_MegaCraftingCenter = configuration.getBoolean("Enable_MegaCraftingCenter", MegaCraftingCenter, Enable_MegaCraftingCenter, "Enable Mega Crafting Center.");
+        TickEveryProcess_MegaCraftingCenter = configuration.getInt("TickEveryProcess_MegaCraftingCenter", MegaCraftingCenter, TickEveryProcess_MegaCraftingCenter, 1, 8192, "Tick in need every processing of Mega Crafting Center. Type: int");
+        MaxMagnification_MegaCraftingCenter = configuration.getInt("MaxMagnification_MegaCraftingCenter", MegaCraftingCenter, MaxMagnification_MegaCraftingCenter, 1, Integer.MAX_VALUE, "Max Magnification parameter limitation of Mega Crafting Center. Type: int");
+        // endregion
+
+        // region Processing Array
+        Enable_ProcessingArray = configuration.getBoolean("Enable_ProcessingArray", ProcessingArray, Enable_ProcessingArray, "Enable Processing Array System.");
         // endregion
 
         // region MicroSpaceTimeFabricatorioRecipes
@@ -642,6 +686,7 @@ public class Config {
         SpeedMultiplier_CrystallineInfinitierMode_CrystallineInfinitier = configuration.getInt("SpeedMultiplier_CrystallineInfinitierMode_CrystallineInfinitier", CrystallineInfinitier, SpeedMultiplier_CrystallineInfinitierMode_CrystallineInfinitier, 1, 64, "Speed Multiplier of Crystalline Infinitier in Crystalline Infinitier mode. Type: int");
         ParallelMultiplier_CrystallineInfinitier = configuration.getInt("ParallelMultiplier_CrystallineInfinitier", CrystallineInfinitier, ParallelMultiplier_CrystallineInfinitier, 1, 256, "Parallel Multiplier of Crystalline Infinitier. The final parallel will be multiplied this value. Type: int");
         FieldTier_EnablePerfectOverclock_CrystallineInfinitier = (byte) configuration.getInt("FieldTier_EnablePerfectOverclock_CrystallineInfinitier", CrystallineInfinitier, FieldTier_EnablePerfectOverclock_CrystallineInfinitier, 1, 11, "When field generator block tier is beyond this value, machine will enable perfect overclock. 3 is the lowest EOH block. Type: byte");
+        PerfectCrystalRecipeNonCyclized = configuration.getBoolean("PerfectCrystalRecipeNonCyclized", CrystallineInfinitier, PerfectCrystalRecipeNonCyclized, "Generate direct recipe of Perfect Lapotron Crystal and Perfect Energy Crystal.");
         // endregion
 
         // region Molecule Deconstructor
@@ -784,6 +829,17 @@ public class Config {
         Enable_BloodHell = configuration.getBoolean("Enable Blood Hell", BloodHell, Enable_BloodHell, "Enable Blood Hell");
         Enable_BloodHatch = configuration.getBoolean("Enable Blood Hatch", BloodHell, Enable_BloodHatch, "Enable Blood Hatch\nThis depends on Enable Blood Hell");
         Enable_BloodHatch_Armok_InfiniteDrain = configuration.getBoolean("Enable Blood Hatch Armok Infinite Drain", BloodHell, Enable_BloodHatch_Armok_InfiniteDrain, "Enable Blood Hatch Drains Armok Orb Infinitely");
+        // endregion
+
+        // region Industrial Alchemy Tower
+        Enable_IndustrialAlchemyTower = configuration.getBoolean("Enable Industrial Alchemy Tower",IndustrialAlchemyTower,Enable_IndustrialAlchemyTower,"Enable Industrial Alchemy Tower");
+        // endregion
+
+        // region ManufacturingCenter
+        ManufacturingCenter_SpeedBonus_Base = configuration.getFloat("Speed Bonus Base", "ManufacturingCenter", ManufacturingCenter_SpeedBonus_Base, 0.0F, Float.MAX_VALUE, "The Base Speed Bonus");
+        ManufacturingCenter_SpeedBonus_Tier = configuration.getFloat("Speed Bonus Tier", "ManufacturingCenter", ManufacturingCenter_SpeedBonus_Tier, 0.0F, Float.MAX_VALUE, "The Speed Bonus for each tier over the lowest tier (not included)");
+        ManufacturingCenter_PowerReduction = configuration.getFloat("Power Reduction", "ManufacturingCenter", ManufacturingCenter_PowerReduction, 0.0F, Float.MAX_VALUE, "The Power Reduction for each tier over the lowest tier (not included)");
+        ManufacturingCenter_MaxParallelModifier = configuration.getInt("Max Parallel Modifier", "ManufacturingCenter", ManufacturingCenter_MaxParallelModifier, 1, Integer.MAX_VALUE, "The maximum parallel modifier");
         // endregion
 
         TST_CleanRoom.loadConfig(configuration);

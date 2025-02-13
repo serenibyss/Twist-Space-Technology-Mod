@@ -56,15 +56,31 @@ public class TST_ItemID extends GTUtility.ItemId {
         if (null == itemStack) return NULL;
         return new TST_ItemID(itemStack.getItem(), OreDictionary.WILDCARD_VALUE);
     }
+
+    public static TST_ItemID[] create(ItemStack... itemStacks) {
+        TST_ItemID[] out = new TST_ItemID[itemStacks.length];
+        for (int i = 0; i < itemStacks.length; i++) {
+            out[i] = TST_ItemID.create(itemStacks[i]);
+        }
+        return out;
+    }
     // endregion
 
     // region Special Methods
     public ItemStack getItemStack() {
-        return new ItemStack(item, 1, metaData);
+        ItemStack r = new ItemStack(item, 1, metaData);
+        if (nbt != null) {
+            r.setTagCompound(nbt);
+        }
+        return r;
     }
 
     public ItemStack getItemStack(int amount) {
-        return new ItemStack(item, amount, metaData);
+        ItemStack r = new ItemStack(item, amount, metaData);
+        if (nbt != null) {
+            r.setTagCompound(nbt);
+        }
+        return r;
     }
 
     public ItemStack getItemStackWithNBT() {
@@ -77,6 +93,14 @@ public class TST_ItemID extends GTUtility.ItemId {
         ItemStack itemStack = new ItemStack(item, amount, metaData);
         itemStack.setTagCompound(nbt);
         return itemStack;
+    }
+
+    public ItemStack getItemStackWithoutNBT() {
+        return new ItemStack(item, 1, metaData);
+    }
+
+    public ItemStack getItemStackWithoutNBT(int amount) {
+        return new ItemStack(item, amount, metaData);
     }
 
     // endregion

@@ -7,6 +7,7 @@ import com.Nxer.TwistSpaceTechnology.combat.PlayerEventHandler;
 import com.Nxer.TwistSpaceTechnology.command.CombatRework_Command;
 import com.Nxer.TwistSpaceTechnology.command.TST_AdminCommand;
 import com.Nxer.TwistSpaceTechnology.command.TST_Command;
+import com.Nxer.TwistSpaceTechnology.common.item.ItemYamato;
 import com.Nxer.TwistSpaceTechnology.common.machine.TST_BigBroArray;
 import com.Nxer.TwistSpaceTechnology.common.recipeMap.recipeResult.ResultInsufficientTier;
 import com.Nxer.TwistSpaceTechnology.config.Config;
@@ -15,7 +16,8 @@ import com.Nxer.TwistSpaceTechnology.event.StartServerEvent;
 import com.Nxer.TwistSpaceTechnology.event.TickingEvent;
 import com.Nxer.TwistSpaceTechnology.network.TST_Network;
 import com.Nxer.TwistSpaceTechnology.system.DysonSphereProgram.logic.DSP_WorldSavedData;
-import com.Nxer.TwistSpaceTechnology.util.TextureUtils;
+import com.Nxer.TwistSpaceTechnology.system.ProcessingArrayBackend.PAHelper;
+import com.Nxer.TwistSpaceTechnology.util.TstUtils;
 
 import WayofTime.alchemicalWizardry.ModBlocks;
 import bartworks.API.SideReference;
@@ -44,9 +46,11 @@ public class CommonProxy {
     public void init(FMLInitializationEvent event) {
 
         MinecraftForge.EVENT_BUS.register(new DSP_WorldSavedData());
+
         if (Config.activateCombatStats) {
             MinecraftForge.EVENT_BUS.register(DamageEventHandler.instance);
         }
+
         ServerEvent serverEvent = new ServerEvent();
         if (SideReference.Side.Server) {
             MinecraftForge.EVENT_BUS.register(serverEvent);
@@ -61,11 +65,12 @@ public class CommonProxy {
 
         CheckRecipeResultRegistry.register(new ResultInsufficientTier(0, 0));
 
-        TextureUtils.registerTexture(
+        TstUtils.registerTexture(
             31,
             0,
             new GTTextureBuilder().setFromBlock(ModBlocks.bloodRune, 0)
                 .build());
+
     }
 
     // postInit "Handle interaction with other mods, complete your setup based on this." (Remove if not needed)
@@ -77,6 +82,14 @@ public class CommonProxy {
         TST_BigBroArray.initializeMaterials();
         TST_BigBroArray.initializeStructure();
         TST_BigBroArray.addRecipes();
+
+        if (Config.Enable_ProcessingArray) {
+            PAHelper.initStatics();
+        }
+
+        if (Config.RewriteEIOTravelStaffConfig) {
+            ItemYamato.rewriteEIOTravelStaffConfig();
+        }
     }
 
     // register server commands in this event handler (Remove if not needed)
@@ -87,8 +100,6 @@ public class CommonProxy {
         if (Config.activateCombatStats) {
             event.registerServerCommand(new CombatRework_Command());
         }
-        // test
-        // *Unfinished */ event.registerServerCommand(new alftest_Command());
     }
 
     public void serverStarted(FMLServerStartedEvent event) {

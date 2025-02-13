@@ -4,7 +4,7 @@ import static WayofTime.alchemicalWizardry.ModBlocks.blockLifeEssence;
 import static com.Nxer.TwistSpaceTechnology.common.api.ModBlocksHandler.BloodInfusedDiamondBlock;
 import static com.Nxer.TwistSpaceTechnology.common.api.ModBlocksHandler.BloodInfusedGlowstone;
 import static com.Nxer.TwistSpaceTechnology.common.api.ModBlocksHandler.BloodInfusedIronBlock;
-import static com.Nxer.TwistSpaceTechnology.common.block.BasicBlocks.MetaBlockCasing02;
+import static com.Nxer.TwistSpaceTechnology.common.init.TstBlocks.MetaBlockCasing02;
 import static com.Nxer.TwistSpaceTechnology.util.TextLocalization.BLUE_PRINT_INFO;
 import static com.Nxer.TwistSpaceTechnology.util.TextLocalization.ModName;
 import static com.Nxer.TwistSpaceTechnology.util.TextLocalization.StructureTooComplex;
@@ -16,6 +16,7 @@ import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofChain;
 import static com.gtnewhorizon.structurelib.structure.StructureUtility.onElementPass;
 import static com.gtnewhorizon.structurelib.structure.StructureUtility.transpose;
 import static gregtech.api.enums.HatchElement.InputBus;
+import static gregtech.api.enums.HatchElement.InputHatch;
 import static gregtech.api.enums.HatchElement.OutputBus;
 import static gregtech.api.enums.Textures.BlockIcons.casingTexturePages;
 import static net.minecraft.block.Block.getBlockFromName;
@@ -39,7 +40,7 @@ import net.minecraftforge.fluids.FluidStack;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.Nxer.TwistSpaceTechnology.common.block.BasicBlocks;
+import com.Nxer.TwistSpaceTechnology.common.init.TstBlocks;
 import com.Nxer.TwistSpaceTechnology.common.machine.multiMachineClasses.GTCM_MultiMachineBase;
 import com.Nxer.TwistSpaceTechnology.common.machine.multiMachineClasses.processingLogics.GTCM_ProcessingLogic;
 import com.Nxer.TwistSpaceTechnology.common.misc.OverclockType;
@@ -48,9 +49,9 @@ import com.Nxer.TwistSpaceTechnology.common.recipeMap.metadata.BloodyHellAlchemi
 import com.Nxer.TwistSpaceTechnology.common.recipeMap.metadata.BloodyHellTierKey;
 import com.Nxer.TwistSpaceTechnology.common.recipeMap.recipeResult.ResultInsufficientTier;
 import com.Nxer.TwistSpaceTechnology.util.BloodMagicHelper;
-import com.Nxer.TwistSpaceTechnology.util.InfoDataHelper;
 import com.Nxer.TwistSpaceTechnology.util.TaskerenAdvancedMathUtils;
 import com.Nxer.TwistSpaceTechnology.util.TextEnums;
+import com.Nxer.TwistSpaceTechnology.util.TstUtils;
 import com.dreammaster.block.BlockList;
 import com.gtnewhorizon.structurelib.alignment.IAlignmentLimits;
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
@@ -87,6 +88,10 @@ public class TST_BloodyHell extends GTCM_MultiMachineBase<TST_BloodyHell> implem
     private int speedRuneCount = 0;
     private int tbSpeedRuneCount = 0;
     private int mTier = 0;
+    /**
+     * parallel = mTier^3
+     */
+    private int parallel = 1;
     private boolean isBloodChecked = false;
     private boolean mIsAnimated = true;
     protected boolean mFormed;
@@ -160,7 +165,7 @@ public class TST_BloodyHell extends GTCM_MultiMachineBase<TST_BloodyHell> implem
 
     @Override
     protected int getMaxParallelRecipes() {
-        return 1;
+        return parallel;
     }
 
     @Override
@@ -226,7 +231,18 @@ public class TST_BloodyHell extends GTCM_MultiMachineBase<TST_BloodyHell> implem
             isBloodChecked = true;
         }
 
-        return mTier > 0;
+        if (mTier <= 0) {
+            parallel = 1;
+            return false;
+        }
+
+        calculateParallel();
+
+        return true;
+    }
+
+    protected void calculateParallel() {
+        parallel = mTier * mTier * mTier;
     }
 
     @Override
@@ -266,7 +282,7 @@ public class TST_BloodyHell extends GTCM_MultiMachineBase<TST_BloodyHell> implem
                 .addShape(STRUCTURE_PIECE_6, transpose(STRUCTURE_TIER_6))
                 .addShape(STRUCTURE_FLUID_1, transpose(STRUCTURE_BLOOD_1))
                 .addShape(STRUCTURE_FLUID_2, transpose(STRUCTURE_BLOOD_2))
-                .addElement('A', ofBlock(BasicBlocks.MetaBlockCasing01, 9))
+                .addElement('A', ofBlock(TstBlocks.MetaBlockCasing01, 9))
                 .addElement('B', ofBlock(MetaBlockCasing02, 0))
                 .addElement('C', ofBlock(MetaBlockCasing02, 1))
                 .addElement('D', ofBlockAnyMeta(BlockList.BloodyIchorium.getBlock()))
@@ -279,7 +295,7 @@ public class TST_BloodyHell extends GTCM_MultiMachineBase<TST_BloodyHell> implem
                         onElementPass((x) -> { x.speedRuneCount += 1; }, ofBlockAnyMeta(ModBlocks.speedRune)),
                         onElementPass(
                             (x) -> { x.tbSpeedRuneCount += 1; },
-                            ofBlockAnyMeta(BasicBlocks.timeBendingSpeedRune))))
+                            ofBlockAnyMeta(TstBlocks.TimeBendingSpeedRune))))
                 .addElement('H', ofBlockAnyMeta(ModBlocks.largeBloodStoneBrick))
                 .addElement('I', ofBlock(BloodInfusedIronBlock.getLeft(), BloodInfusedIronBlock.getRight()))
                 .addElement('J', ofBlockAnyMeta(ModBlocks.blockCrystal))
@@ -294,7 +310,7 @@ public class TST_BloodyHell extends GTCM_MultiMachineBase<TST_BloodyHell> implem
                     ofChain(
                         ofBlock(MetaBlockCasing02, 0),
                         HatchElementBuilder.<TST_BloodyHell>builder()
-                            .atLeast(InputBus, OutputBus)
+                            .atLeast(InputBus, OutputBus, InputHatch)
                             .adder(TST_BloodyHell::addToMachineList)
                             .dot(1)
                             .casingIndex(MetaBlockCasing02.getTextureIndex(0))
@@ -492,6 +508,7 @@ public class TST_BloodyHell extends GTCM_MultiMachineBase<TST_BloodyHell> implem
         aNBT.setInteger("speedRuneCount", speedRuneCount);
         aNBT.setInteger("tbSpeedRuneCount", tbSpeedRuneCount);
         aNBT.setInteger("mTier", mTier);
+        aNBT.setInteger("parallel", parallel);
     }
 
     @Override
@@ -501,11 +518,12 @@ public class TST_BloodyHell extends GTCM_MultiMachineBase<TST_BloodyHell> implem
         speedRuneCount = aNBT.getInteger("speedRuneCount");
         tbSpeedRuneCount = aNBT.getInteger("tbSpeedRuneCount");
         mTier = aNBT.getInteger("mTier");
+        parallel = aNBT.getInteger("parallel");
     }
 
     @Override
     public String[] getInfoData() {
-        return InfoDataHelper.buildInfoData(super.getInfoData(), (info) -> {
+        return TstUtils.buildInfoData(super.getInfoData(), (info) -> {
             info.add(EnumChatFormatting.BLUE + "Structure Tier: " + EnumChatFormatting.GOLD + mTier);
             info.add(
                 EnumChatFormatting.BLUE + "Speed Rune Count: "
@@ -657,11 +675,11 @@ public class TST_BloodyHell extends GTCM_MultiMachineBase<TST_BloodyHell> implem
         {"                      ABA                      ","                       A                       ","                       G                       ","                       G                       ","  A   A                A                A   A  "," AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA "},
         {"                     AABAA                     ","                       A                       ","                       G                       ","                       G                       ","AAA  A                 A                 A  AAA","AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"},
         {"                    ANNNNNA                    ","                     AAAAA                     ","       AA            GGAGG            AA       ","   AAAA              GGGGG              AAAA   "," ABA A               AAAAA               A ABA ","AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"},
-        {"                   ANNNNNNNA                   ","            AAA     AAAAAAA     AAA            ","       BBAAA        GDEAEDG        AAABB       ","   BBBBAA           GDEAEDG           AABBBB   "," ABA AA             AGGAGGA             AA ABA ","AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"},
-        {"                 AAANNBBBNNAAA                 ","            BBBAA   AAAAAAA   AABBB            ","       BBBBBAAA     GEEHEEG     AAABBBBB       ","   BBBBAAAAA        GEEAEEG        AAAAABBBB   "," ABA AA             AGAAAGA             AA ABA ","AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"},
+        {"                   ANNNNNNNA                   ","            AAA     AAAAAAA     AAA            ","       BBAAA        GEFAFEG        AAABB       ","   BBBBAA           GEFAFEG           AABBBB   "," ABA AA             AGGAGGA             AA ABA ","AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"},
+        {"                 AAANNBBBNNAAA                 ","            BBBAA   AAAAAAA   AABBB            ","       BBBBBAAA     GFFHFFG     AAABBBBB       ","   BBBBAAAAA        GFFAFFG        AAAAABBBB   "," ABA AA             AGAAAGA             AA ABA ","AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"},
         {"                 BBBNNB~BNNBBB                 ","            BBBBBAAAAAAAAAAAAABBBBB            ","       BBBBBAAAAAGGGAAHKHAAGGGAAAAABBBBB       ","   BBBBAAAAA     AGGGAAAAAGGGA     AAAAABBBB   "," ABA AA           AAAAAAAAAAA           AA ABA ","AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"},
-        {"                 AAANNBBBNNAAA                 ","            BBBAA   AAAAAAA   AABBB            ","       BBBBBAAA     GEEHEEG     AAABBBBB       ","   BBBBAAAAA        GEEAEEG        AAAAABBBB   "," ABA AA             AGAAAGA             AA ABA ","AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"},
-        {"                   ANNNNNNNA                   ","            AAA     AAAAAAA     AAA            ","       BBAAA        GDEAEDG        AAABB       ","   BBBBAA           GDEAEDG           AABBBB   "," ABA AA             AGGAGGA             AA ABA ","AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"},
+        {"                 AAANNBBBNNAAA                 ","            BBBAA   AAAAAAA   AABBB            ","       BBBBBAAA     GFFHFFG     AAABBBBB       ","   BBBBAAAAA        GFFAFFG        AAAAABBBB   "," ABA AA             AGAAAGA             AA ABA ","AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"},
+        {"                   ANNNNNNNA                   ","            AAA     AAAAAAA     AAA            ","       BBAAA        GEFAFEG        AAABB       ","   BBBBAA           GEFAFEG           AABBBB   "," ABA AA             AGGAGGA             AA ABA ","AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"},
         {"                    ANNNNNA                    ","                     AAAAA                     ","       AA            GGAGG            AA       ","   AAAA              GGGGG              AAAA   "," ABA A               AAAAA               A ABA ","AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"},
         {"                     AABAA                     ","                       A                       ","                       G                       ","                       G                       ","AAA  A                 A                 A  AAA","AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"},
         {"                      ABA                      ","                       A                       ","                       G                       ","                       G                       ","  A   A                A                A   A  "," AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA "},
